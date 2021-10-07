@@ -140,4 +140,19 @@ class UserController extends Controller
 
         return ResponseFormatter::success($user, 'Profile Updated');
     }
+
+    public function getPoint($addPoint)
+    {
+        try {
+            $user = Auth::user();
+            $user->poin += $addPoint;
+            $user->save();
+            return ResponseFormatter::success($user, 'Point Updated');
+        } catch (Exception $e) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $e,
+            ], 'Authentication Failed', 500);
+        }
+    }
 }

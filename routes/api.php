@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\JawabanController;
 use App\Http\Controllers\API\PertanyaanController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -22,9 +23,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('user/photo', [UserController::class, 'updatePhoto']);
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('user/password', [UserController::class, 'updatePassword']);
+    Route::post('user/point/{addPoint}', [UserController::class, 'getPoint']);
 
     Route::post('pertanyaan', [PertanyaanController::class, 'create']);
+
+    Route::post('jawaban', [JawabanController::class, 'create']);
+    Route::post('upvote/{id}', [JawabanController::class, 'upvote']);
+    Route::post('downvote/{id}', [JawabanController::class, 'downvote']);
 });
 
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
+
+Route::get('pertanyaan', [PertanyaanController::class, 'all']);

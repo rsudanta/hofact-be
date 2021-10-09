@@ -22,7 +22,10 @@ class JawabanController extends Controller
         ]);
 
         try {
-            $file = $request->file->store('assets/jawaban', 'public');
+            $file = '';
+            if ($request->file) {
+                $file = $request->file->store('assets/jawaban', 'public');
+            }
 
             $answer = Jawaban::with(['user', 'pertanyaan'])->create([
                 'id_user' => Auth::user()->id,

@@ -9,9 +9,9 @@
 
     <div class="p-6 border-t border-gray-200 md:border-t-0 md:border-l">
         <div class="flex items-center">
-            <div class="ml-4 text-lg text-gray-600 leading-7 font-semibold"><a href="https://laracasts.com">Post</a>
+            <div class="ml-4 text-lg text-gray-600 leading-7 font-semibold"><a
+                    href="{{ route('questions.index') }}">Post</a>
             </div>
         </div>
     </div>
-
 </div>

@@ -16,7 +16,7 @@ class PertanyaanController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'judul_pertanyaan' => ['required', 'string', 'max:255', 'unique:pertanyaans'],
-            'isi_pertanyaan' => ['required', 'string', 'max:255'],
+            'isi_pertanyaan' => ['required', 'string'],
             'file' => ['image', 'max:2048']
         ]);
 
@@ -29,7 +29,10 @@ class PertanyaanController extends Controller
         }
 
         try {
-            $file = $request->file->store('assets/pertanyaan', 'public');
+            $file = '';
+            if ($request->file) {
+                $file = $request->file->store('assets/pertanyaan', 'public');
+            }
 
             Pertanyaan::create([
                 'judul_pertanyaan' => $request->judul_pertanyaan,

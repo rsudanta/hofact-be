@@ -19,6 +19,7 @@ class CreatePertanyaansTable extends Migration
             $table->text('isi_pertanyaan');
             $table->integer('id_user');
             $table->text('picture_path')->nullable();
+            $table->boolean('is_terverifikasi')->default(false);
 
             $table->timestamps();
             $table->softDeletes();

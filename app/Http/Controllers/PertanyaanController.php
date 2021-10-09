@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserRequest;
-use App\Models\User;
+use App\Models\Jawaban;
+use App\Models\Pertanyaan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class PertanyaanController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +15,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(20);
-        return view('users.index', [
-            'users' => $users
+        $questions = Pertanyaan::with(['user'])->paginate(20);
+        return view('questions.index', [
+            'questions' => $questions
         ]);
     }
 
@@ -29,23 +28,18 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('users.create');
+        //
     }
+
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return redirect()->route('users.index');
+        //
     }
 
     /**
@@ -65,10 +59,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit(Pertanyaan $question)
     {
-        return view('users.edit', [
-            'item' => $user
+        $answers = Jawaban::with(['pertanyaan', 'user'])->where('id_pertanyaan', $question->id)->get();
+
+        return view('questions.edit', [
+            'question' => $question,
+            'answers' => $answers
         ]);
     }
 
@@ -79,12 +76,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        $data = $request->all();
-        $user->update($data);
-
-        return redirect()->route('users.index');
+        //
     }
 
     /**
@@ -93,16 +87,16 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(Pertanyaan $question)
     {
-        $user->delete();
-        return redirect()->route('users.index');
+        $question->delete();
+        return redirect()->route('questions.index');
     }
 
-    public function searchUser(Request $request)
+    public function searchQuestion(Request $request)
     {
         $keyword = $request->search;
-        $users = User::where('name', 'like', "%" . $keyword . "%")->orWhere('email', 'like', "%" . $keyword . "%")->orWhere('id', 'like', "%" . $keyword . "%")->orWhere('role', 'like', "%" . $keyword . "%")->paginate(5);
-        return view('users.index', compact('users'))->with('i', (request()->input('page', 1) - 1) * 5);
+        $questions = Pertanyaan::where('judul_pertanyaan', 'like', "%" . $keyword . "%")->orWhere('id', 'like', "%" . $keyword . "%")->paginate(5);
+        return view('questions.index', compact('questions'))->with('i', (request()->input('page', 1) - 1) * 5);
     }
 }

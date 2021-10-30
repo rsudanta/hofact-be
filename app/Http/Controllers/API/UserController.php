@@ -149,10 +149,7 @@ class UserController extends Controller
             $user->save();
             return ResponseFormatter::success($user, 'Point Updated');
         } catch (Exception $e) {
-            return ResponseFormatter::error([
-                'message' => 'Something went wrong',
-                'error' => $e,
-            ], 'Authentication Failed', 500);
+            return ResponseFormatter::error($e, 'Error update point');
         }
     }
 }

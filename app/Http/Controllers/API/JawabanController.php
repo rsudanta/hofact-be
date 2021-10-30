@@ -114,4 +114,35 @@ class JawabanController extends Controller
             return ResponseFormatter::error(null, 'Downvote is failed');
         }
     }
+
+    public function all(Request $request)
+    {
+        $id = $request->input('id');
+        $id_pertanyaan = $request->input('id_pertanyaan');
+
+        if ($id) {
+            $question = Jawaban::find($id);
+
+            if ($question) {
+                return ResponseFormatter::success(
+                    $question,
+                    'Data jawaban berhasil diambil'
+                );
+            } else {
+                return ResponseFormatter::error(
+                    null,
+                    'Data jawaban tidak ditemukan',
+                    404
+                );
+            }
+        }
+
+        $question = Jawaban::query();
+
+        if ($id_pertanyaan) {
+            $question->where('id_pertanyaan', $id_pertanyaan);
+        }
+
+        return ResponseFormatter::success($question->orderBy('is_terverifikasi', 'desc')->paginate(), 'Data list jawaban berhasil diambil');
+    }
 }

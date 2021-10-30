@@ -24,15 +24,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('user/password', [UserController::class, 'updatePassword']);
     Route::post('user/point/{addPoint}', [UserController::class, 'getPoint']);
-
     Route::post('pertanyaan', [PertanyaanController::class, 'create']);
+    Route::post('pertanyaan/photo/{id}', [PertanyaanController::class, 'updatePhoto']);
 
     Route::post('jawaban', [JawabanController::class, 'create']);
     Route::post('upvote/{id}', [JawabanController::class, 'upvote']);
     Route::post('downvote/{id}', [JawabanController::class, 'downvote']);
 });
 
+
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
 Route::get('pertanyaan', [PertanyaanController::class, 'all']);
+
+Route::get('jawaban', [JawabanController::class, 'all']);

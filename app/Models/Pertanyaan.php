@@ -12,10 +12,11 @@ class Pertanyaan extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'id',
         'judul_pertanyaan',
         'isi_pertanyaan',
         'id_user',
-        'picture_path',
+        'gambar_url'
     ];
 
     public function user()
@@ -23,12 +24,21 @@ class Pertanyaan extends Model
         return $this->hasOne(User::class, 'id', 'id_user');
     }
 
-    public function getCreatedAtAttribute($value)
+    public function jawaban()
     {
-        return Carbon::parse($value)->timestamp;
+        return $this->hasMany(Jawaban::class, 'id_pertanyaan', 'id');
     }
-    public function getUpdatedAtAttribute($value)
+
+
+    public function getNameAttribute()
     {
-        return Carbon::parse($value)->timestamp;
+        return $this->user->name;
     }
+
+    public function getIsiJawabanAttribute()
+    {
+        return $this->jawaban;
+    }
+
+    protected $appends = ['name', 'isi_jawaban'];
 }

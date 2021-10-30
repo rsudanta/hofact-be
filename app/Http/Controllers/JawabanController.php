@@ -29,9 +29,13 @@ class JawabanController extends Controller
         $jawaban = Jawaban::where('id', $id)->first();
         $pertanyaan = Pertanyaan::where('id', $jawaban->pertanyaan->id)->first();
         $jawaban->is_terverifikasi = 0;
-        $pertanyaan->is_terverifikasi = 1;
-        $pertanyaan->save();
         $jawaban->save();
+
+        $countVerified = Jawaban::where('id_pertanyaan', $jawaban->pertanyaan->id)->where('is_terverifikasi', 1)->count();
+        if ($countVerified < 1) {
+            $pertanyaan->is_terverifikasi = 0;
+            $pertanyaan->save();
+        }
 
         return redirect()->route('questions.edit', $jawaban->pertanyaan->id);
     }

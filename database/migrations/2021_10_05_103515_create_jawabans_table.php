@@ -20,7 +20,7 @@ class CreateJawabansTable extends Migration
 
             $table->text('isi_jawaban');
             $table->text('file')->nullable();
-            $table->integer('vote')->default(0);
+            $table->integer('total_vote')->default(0);
             $table->boolean('is_terverifikasi')->default(false);
             $table->integer('id_user');
             $table->integer('id_pertanyaan');

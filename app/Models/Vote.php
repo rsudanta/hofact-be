@@ -17,10 +17,22 @@ class Vote extends Model
 
     public function jawaban()
     {
-        return $this->hasOne(Pertanyaan::class, 'id', 'id_jawaban');
+        return $this->hasOne(Jawaban::class, 'id', 'id_jawaban');
     }
+
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'id_user');
     }
+
+    public function getIsiJawabanAttribute()
+    {
+        return $this->jawaban;
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->user->name;
+    }
+
 }

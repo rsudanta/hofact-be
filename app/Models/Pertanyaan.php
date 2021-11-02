@@ -29,7 +29,6 @@ class Pertanyaan extends Model
         return $this->hasMany(Jawaban::class, 'id_pertanyaan', 'id');
     }
 
-
     public function getNameAttribute()
     {
         return $this->user->name;

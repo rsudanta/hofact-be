@@ -30,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('jawaban', [JawabanController::class, 'create']);
     Route::post('upvote/{id}', [JawabanController::class, 'upvote']);
     Route::post('downvote/{id}', [JawabanController::class, 'downvote']);
+    Route::get('vote/{id}', [JawabanController::class, 'getVote']);
+
 });
 
 

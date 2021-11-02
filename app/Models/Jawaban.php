@@ -13,7 +13,7 @@ class Jawaban extends Model
     protected $fillable = [
         'isi_jawaban',
         'file',
-        'vote',
+        'total_vote',
         'is_terverifikasi',
         'id_user',
         'id_pertanyaan',
@@ -27,12 +27,22 @@ class Jawaban extends Model
     {
         return $this->hasOne(User::class, 'id', 'id_user');
     }
+
+    public function vote()
+    {
+        return $this->hasMany(Vote::class, 'id_jawaban', 'id');
+    }
     
     public function getNameAttribute()
     {
         return $this->user->name;
     }
 
-    protected $appends = ['name'];
+    public function getStatusAttribute()
+    {
+        return $this->vote;
+    }
+
+    protected $appends = ['name','status'];
 
 }

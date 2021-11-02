@@ -65,15 +65,30 @@ class User extends Authenticatable
      * @var array
      */
     protected $appends = [
-        'profile_photo_url',
+        'profile_photo_url'
     ];
 
-    public function getCreatedAtAttribute($value)
-    {
-        return Carbon::parse($value)->timestamp;
-    }
-    public function getUpdatedAtAttribute($value)
-    {
-        return Carbon::parse($value)->timestamp;
-    }
+   // public function jawaban()
+   //  {
+   //      return $this->hasOne(Jawaban::class, 'id_user', 'id');
+   //  }
+
+   //     public function pertanyaan()
+   //  {
+   //      return $this->hasMany(Pertanyaan::class, 'id_user', 'id');
+   //  }
+
+   // //  // public function getCreatedAtAttribute($value)
+   // //  // {
+   // //  //     return Carbon::parse($value)->timestamp;
+   // //  // }
+   // //  // public function getUpdatedAtAttribute($value)
+   // //  // {
+   // //  //     return Carbon::parse($value)->timestamp;
+   // //  // }
+
+   //      public function getJudulPertanyaanAttribute($value)
+   //  {
+   //      return $this->pertanyaan;
+   //  }
 }

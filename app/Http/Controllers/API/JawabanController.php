@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Jawaban;
+use App\Models\User;
 use App\Models\Vote;
 use Exception;
 use Illuminate\Http\Request;
@@ -33,6 +34,11 @@ class JawabanController extends Controller
                 'isi_jawaban' => $request->isi_jawaban,
                 'file' => $file,
             ]);
+
+            $user = Auth::user();
+            $user->poin += 10;
+            $user->save();
+
             return ResponseFormatter::success($answer, 'Post answer is success');
         } catch (Exception $e) {
             return ResponseFormatter::error($e, 'Post answer is failed');
@@ -45,9 +51,15 @@ class JawabanController extends Controller
         $has_downvote = Vote::where('id_user', Auth::user()->id)->where('id_jawaban', $id)->where('status', 'DOWNVOTE')->first();
         if ($has_downvote) {
             $answer = Jawaban::where('id', $id)->first();
-            $answer->vote += 1;
+            $answer->total_vote += 1;
             $answer->save();
             $has_downvote->delete();
+
+            $id_user = Jawaban::where('id',$id)->value('id_user');
+            $user = User::where('id', $id_user)->first();
+            $user->poin +=1;
+            $user->save();
+
         }
         $user = Vote::where('id_user', Auth::user()->id)->where('id_jawaban', $id)->where('status', 'UPVOTE')->first();
         if ($user == null) {
@@ -64,8 +76,14 @@ class JawabanController extends Controller
                         'status' => "UPVOTE",
                     ]);
                     $answer = Jawaban::where('id', $id)->first();
-                    $answer->vote += 1;
+                    $answer->total_vote += 1;
                     $answer->save();
+
+                    $id_user = Jawaban::where('id',$id)->value('id_user');
+                    $user = User::where('id', $id_user)->first();
+                    $user->poin +=1;
+                    $user->save();
+
                     return ResponseFormatter::success($upvote, 'Upvote is success');
                 } catch (Exception $e) {
                     return ResponseFormatter::error($e, 'Upvote is failed');
@@ -73,7 +91,7 @@ class JawabanController extends Controller
             }
             return ResponseFormatter::error(null, 'Upvote is failed');
         } else {
-            return ResponseFormatter::error(null, 'Upvote is failed');
+            return ResponseFormatter::error(null, 'Anda sudah memberikan vote');
         }
     }
 
@@ -82,9 +100,14 @@ class JawabanController extends Controller
         $has_upvote = Vote::where('id_user', Auth::user()->id)->where('id_jawaban', $id)->where('status', 'UPVOTE')->first();
         if ($has_upvote) {
             $answer = Jawaban::where('id', $id)->first();
-            $answer->vote -= 1;
+            $answer->total_vote -= 1;
             $answer->save();
             $has_upvote->delete();
+
+            $id_user = Jawaban::where('id',$id)->value('id_user');
+            $user = User::where('id', $id_user)->first();
+            $user->poin -=1;
+            $user->save();
         }
         $user = Vote::where('id_user', Auth::user()->id)->where('id_jawaban', $id)->where('status', 'DOWNVOTE')->first();
         if ($user == null) {
@@ -102,8 +125,14 @@ class JawabanController extends Controller
                     ]);
 
                     $answer = Jawaban::where('id', $id)->first();
-                    $answer->vote -= 1;
+                    $answer->total_vote -= 1;
                     $answer->save();
+
+                    $id_user = Jawaban::where('id',$id)->value('id_user');
+                    $user = User::where('id', $id_user)->first();
+                    $user->poin -=1;
+                    $user->save();
+
                     return ResponseFormatter::success($downvote, 'Downvote is success');
                 } catch (Exception $e) {
                     return ResponseFormatter::error($e, 'Downvote is failed');
@@ -143,6 +172,17 @@ class JawabanController extends Controller
             $question->where('id_pertanyaan', $id_pertanyaan);
         }
 
-        return ResponseFormatter::success($question->orderBy('is_terverifikasi', 'desc')->paginate(), 'Data list jawaban berhasil diambil');
+        return ResponseFormatter::success($question->orderBy('is_terverifikasi', 'desc')->orderBy('total_vote', 'desc')->paginate(), 'Data list jawaban berhasil diambil');
+    }
+
+
+    public function getVote(Request $request, $id)
+    { 
+
+        $id_jawaban = $request->input('id_jawaban');
+
+        $vote = Vote::where('id_user',$id)->get();
+
+        return ResponseFormatter::success($vote, 'Data list jawaban berhasil diambil');
     }
 }

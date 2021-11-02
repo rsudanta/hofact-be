@@ -33,6 +33,7 @@ class PertanyaanController extends Controller
                 'isi_pertanyaan' => $request->isi_pertanyaan,
                 'id_user' => Auth::user()->id,
             ]);
+
             $data = Pertanyaan::where('judul_pertanyaan', $request->judul_pertanyaan)->first();
 
             return ResponseFormatter::success($data, 'Question successfully created');
@@ -122,7 +123,7 @@ class PertanyaanController extends Controller
             $question->where('isi_pertanyaan', 'like', '%' . $isi_pertanyaan . '%');
         }
         if ($id_user) {
-            $question->where('id_user', 'like', '%' . $id_user . '%');
+            $question->where('id_user', $id_user);
         }
 
         return ResponseFormatter::success($question->orderBy('created_at', 'desc')->paginate($limit), 'Data list pertanyaan berhasil diambil');

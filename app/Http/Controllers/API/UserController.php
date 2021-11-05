@@ -121,7 +121,7 @@ class UserController extends Controller
             $file = $request->file->store('assets/user', 'public');
 
             $user = Auth::user();
-            $user->profile_photo_url = $file;
+            $user->photo_path = $file;
             $user->update();
 
             return ResponseFormatter::success([$file], 'File successfully uploaded');
@@ -130,15 +130,28 @@ class UserController extends Controller
 
     public function updatePassword(Request $request)
     {
+        try{
+            
         $request->validate([
             'password' => $this->passwordRules(),
+            'current_password' => 'required'
         ]);
 
         $user = Auth::user();
+        if (!Hash::check($request->current_password, $user->password, [])) {
+                throw new \Exception('Invalid Credentials');
+            }
         $user->password = Hash::make($request->password);
         $user->save();
 
         return ResponseFormatter::success($user, 'Profile Updated');
+        }
+        catch (Exception $error) {
+            return ResponseFormatter::error([
+                'message' => 'Something went wrong',
+                'error' => $error
+            ], 'Authentication Failed', 500);
+        }
     }
 
     public function getPoint($addPoint)
@@ -151,5 +164,11 @@ class UserController extends Controller
         } catch (Exception $e) {
             return ResponseFormatter::error($e, 'Error update point');
         }
+    }
+    
+    public function leaderboard(Request $request)
+    {
+        $user = User::orderBy('poin', 'desc')->orderBy('created_at', 'desc')->limit(10)->get();
+        return ResponseFormatter::success($user, 'Point Updated');
     }
 }

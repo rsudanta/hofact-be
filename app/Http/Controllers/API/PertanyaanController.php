@@ -64,28 +64,11 @@ class PertanyaanController extends Controller
             $pertanyaan->gambar_url = $file;
             $pertanyaan->update();
 
-            return ResponseFormatter::success([$file], 'File successfully uploaded');    
+            return ResponseFormatter::success($pertanyaan, 'File successfully uploaded');    
             }
             
         }
 
-        // try {
-        //     $request->validate([
-        //         'judul_pertanyaan' => ['required', 'string', 'max:255','unique:pertanyaans'],
-        //         'isi_pertanyaan' => ['required', 'string', 'max:255'],
-        //     ]);
-
-        //     Pertanyaan::create([
-        //         'judul_pertanyaan' => $request->judul_pertanyaan,
-        //         'isi_pertanyaan' => $request->isi_pertanyaan,
-        //         'id_user' => Auth::user()->id,
-        //     ]);
-
-        //     $data = Pertanyaan::where('judul_pertanyaan', $request->judul_pertanyaan)->first();
-        //     return ResponseFormatter::success($data,'Question successfully created');
-        // } catch (Exception $e) {
-        //     return ResponseFormatter::error($e,'Question is failed to create');
-        // }
     }
 
     public function all(Request $request)

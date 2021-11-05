@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [UserController::class, 'fetch']);
+    Route::get('user/leaderboard', [UserController::class, 'leaderboard']);
     Route::post('user', [UserController::class, 'updateProfile']);
     Route::post('user/photo', [UserController::class, 'updatePhoto']);
     Route::post('logout', [UserController::class, 'logout']);
@@ -28,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('pertanyaan/photo/{id}', [PertanyaanController::class, 'updatePhoto']);
 
     Route::post('jawaban', [JawabanController::class, 'create']);
+    Route::post('jawaban/photo/{id}', [JawabanController::class, 'updatePhoto']);
     Route::post('upvote/{id}', [JawabanController::class, 'upvote']);
     Route::post('downvote/{id}', [JawabanController::class, 'downvote']);
     Route::get('vote/{id}', [JawabanController::class, 'getVote']);

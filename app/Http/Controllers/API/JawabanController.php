@@ -10,6 +10,7 @@ use App\Models\Vote;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class JawabanController extends Controller
 {
@@ -19,20 +20,13 @@ class JawabanController extends Controller
             'id_user' => 'exists:users,id',
             'id_pertanyaan' => 'required|exists:pertanyaans,id',
             'isi_jawaban' => 'required',
-            'file' => 'file|max:2048',
         ]);
 
         try {
-            $file = '';
-            if ($request->file) {
-                $file = $request->file->store('assets/jawaban', 'public');
-            }
-
             $answer = Jawaban::with(['user', 'pertanyaan'])->create([
                 'id_user' => Auth::user()->id,
                 'id_pertanyaan' => $request->id_pertanyaan,
                 'isi_jawaban' => $request->isi_jawaban,
-                'file' => $file,
             ]);
 
             $user = Auth::user();
@@ -45,6 +39,7 @@ class JawabanController extends Controller
         }
     }
 
+
     public function upvote(Request $request, $id)
     {
 
@@ -55,11 +50,10 @@ class JawabanController extends Controller
             $answer->save();
             $has_downvote->delete();
 
-            $id_user = Jawaban::where('id',$id)->value('id_user');
+            $id_user = Jawaban::where('id', $id)->value('id_user');
             $user = User::where('id', $id_user)->first();
-            $user->poin +=1;
+            $user->poin += 1;
             $user->save();
-
         }
         $user = Vote::where('id_user', Auth::user()->id)->where('id_jawaban', $id)->where('status', 'UPVOTE')->first();
         if ($user == null) {
@@ -79,9 +73,9 @@ class JawabanController extends Controller
                     $answer->total_vote += 1;
                     $answer->save();
 
-                    $id_user = Jawaban::where('id',$id)->value('id_user');
+                    $id_user = Jawaban::where('id', $id)->value('id_user');
                     $user = User::where('id', $id_user)->first();
-                    $user->poin +=1;
+                    $user->poin += 1;
                     $user->save();
 
                     return ResponseFormatter::success($upvote, 'Upvote is success');
@@ -104,9 +98,9 @@ class JawabanController extends Controller
             $answer->save();
             $has_upvote->delete();
 
-            $id_user = Jawaban::where('id',$id)->value('id_user');
+            $id_user = Jawaban::where('id', $id)->value('id_user');
             $user = User::where('id', $id_user)->first();
-            $user->poin -=1;
+            $user->poin -= 1;
             $user->save();
         }
         $user = Vote::where('id_user', Auth::user()->id)->where('id_jawaban', $id)->where('status', 'DOWNVOTE')->first();
@@ -128,9 +122,9 @@ class JawabanController extends Controller
                     $answer->total_vote -= 1;
                     $answer->save();
 
-                    $id_user = Jawaban::where('id',$id)->value('id_user');
+                    $id_user = Jawaban::where('id', $id)->value('id_user');
                     $user = User::where('id', $id_user)->first();
-                    $user->poin -=1;
+                    $user->poin -= 1;
                     $user->save();
 
                     return ResponseFormatter::success($downvote, 'Downvote is success');
@@ -148,6 +142,8 @@ class JawabanController extends Controller
     {
         $id = $request->input('id');
         $id_pertanyaan = $request->input('id_pertanyaan');
+        $id_user = $request->input('id_user');
+
 
         if ($id) {
             $question = Jawaban::find($id);
@@ -172,17 +168,48 @@ class JawabanController extends Controller
             $question->where('id_pertanyaan', $id_pertanyaan);
         }
 
+        if ($id_user) {
+            $question->where('id_user', $id_user);
+        }
+
         return ResponseFormatter::success($question->orderBy('is_terverifikasi', 'desc')->orderBy('total_vote', 'desc')->paginate(), 'Data list jawaban berhasil diambil');
     }
 
 
     public function getVote(Request $request, $id)
-    { 
+    {
 
         $id_jawaban = $request->input('id_jawaban');
 
-        $vote = Vote::where('id_user',$id)->get();
+        $vote = Vote::where('id_user', $id)->get();
 
         return ResponseFormatter::success($vote, 'Data list jawaban berhasil diambil');
+    }
+
+    public function updatePhoto(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|image|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseFormatter::error(
+                ['error' => $validator->errors()],
+                'Update photo fails',
+                401
+            );
+        }
+
+        if ($request->file('file')) {
+            $file = $request->file->store('assets/jawaban', 'public');
+
+            $jawaban = Jawaban::find($id);
+            if (Auth::user()->id == $jawaban->id_user) {
+                $jawaban->gambar_url = $file;
+                $jawaban->update();
+
+                return ResponseFormatter::success([$file], 'File successfully uploaded');
+            }
+        }
     }
 }

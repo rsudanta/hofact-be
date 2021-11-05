@@ -35,6 +35,7 @@ class User extends Authenticatable
         'jenis_kelamin',
         'kota_asal',
         'poin',
+        'photo_path',
         'role'
     ];
 

@@ -19,7 +19,7 @@ class CreateJawabansTable extends Migration
             $table->softDeletes();
 
             $table->text('isi_jawaban');
-            $table->text('file')->nullable();
+            $table->string('gambar_url', 2048)->nullable();
             $table->integer('total_vote')->default(0);
             $table->boolean('is_terverifikasi')->default(false);
             $table->integer('id_user');

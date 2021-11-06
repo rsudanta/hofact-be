@@ -168,7 +168,7 @@ class UserController extends Controller
     
     public function leaderboard(Request $request)
     {
-        $user = User::orderBy('poin', 'desc')->orderBy('created_at', 'desc')->limit(10)->get();
+        $user = User::where('role','USER')->orderBy('poin', 'desc')->orderBy('created_at', 'desc')->limit(10)->get();       
         return ResponseFormatter::success($user, 'Point Updated');
     }
 }

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Models\Vote;
+use App\Models\Pertanyaan;
+use App\Models\Jawaban;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -95,6 +98,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $pertanyaan = Pertanyaan::where('id_user',$user->id);
+        $jawaban = Jawaban::where('id_user',$user->id);
+        $vote = Vote::where('id_user',$user->id);
+        $pertanyaan->delete();
+        $jawaban->delete();
+        $vote->delete();
         $user->delete();
         return redirect()->route('users.index');
     }

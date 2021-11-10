@@ -16,11 +16,20 @@ class JawabanController extends Controller
 {
     public function create(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'id_user' => 'exists:users,id',
             'id_pertanyaan' => 'required|exists:pertanyaans,id',
             'isi_jawaban' => 'required',
+        ], [
+            'isi_jawaban.required' => 'Kamu harus mengisi jawaban',
         ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            return ResponseFormatter::error([
+                'message' => $error
+            ], 'Data invalid', 401);
+        }
 
         try {
             $answer = Jawaban::with(['user', 'pertanyaan'])->create([

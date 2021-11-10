@@ -17,14 +17,17 @@ class PertanyaanController extends Controller
         $validator = Validator::make($request->all(), [
             'judul_pertanyaan' => ['required', 'string', 'max:255', 'unique:pertanyaans'],
             'isi_pertanyaan' => ['required', 'string'],
+        ], [
+            'judul_pertanyaan.required' => 'Kamu harus mengisi judul pertanyaan',
+            'judul_pertanyaan.unique' => 'Judul pertanyaan sudah pernah digunakan',
+            'isi_pertanyaan.required' => 'Kamu harus mengisi deskripsi pertanyaan',
         ]);
 
         if ($validator->fails()) {
-            return ResponseFormatter::error(
-                ['error' => $validator->errors()],
-                'Post Question Validation Failed',
-                401
-            );
+            $error = $validator->errors()->first();
+            return ResponseFormatter::error([
+                'message' => $error
+            ], 'Data invalid', 401);
         }
 
         try {
@@ -60,15 +63,13 @@ class PertanyaanController extends Controller
             $file = $request->file->store('assets/pertanyaan', 'public');
 
             $pertanyaan = Pertanyaan::find($id);
-            if(Auth::user()->id == $pertanyaan->id_user){
-            $pertanyaan->gambar_url = $file;
-            $pertanyaan->update();
+            if (Auth::user()->id == $pertanyaan->id_user) {
+                $pertanyaan->gambar_url = $file;
+                $pertanyaan->update();
 
-            return ResponseFormatter::success($pertanyaan, 'File successfully uploaded');    
+                return ResponseFormatter::success($pertanyaan, 'File successfully uploaded');
             }
-            
         }
-
     }
 
     public function all(Request $request)
